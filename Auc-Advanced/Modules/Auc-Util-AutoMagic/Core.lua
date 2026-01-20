@@ -460,7 +460,12 @@ function lib.vendorAction(autovendor)
 		for slot=1,GetContainerNumSlots(bag) do
 			if (GetContainerItemLink(bag,slot)) then
 				local itemLink = GetContainerItemLink(bag,slot)
-				local texture, itemCount, locked, _, lootable = GetContainerItemInfo(bag, slot) --items that have been vedored but are still in players bag (lag) will be locked by server.
+				local iteminfo = GetContainerItemInfo(bag, slot) --items that have been vedored but are still in players bag (lag) will be locked by server.
+				if not iteminfo then return end
+				local texture = iteminfo.iconFileID
+				local itemCount = iteminfo.stackCount
+				local locked = iteminfo.isLocked
+				local lootable = iteminfo.hasLoot
 				if itemLink and not locked then
 					if not itemCount then itemCount = 1 end
 					local linkType, itemID, _, _, _, _ = decode(itemLink)
@@ -630,25 +635,28 @@ end
 function lib.customAction(button)
 	MailFrameTab_OnClick(nil, 2)
 	for bag=0,4 do
-		for slot=1,GetContainerNumSlots(bag) do
-			if (GetContainerItemLink(bag,slot)) then
-				local itemLink = GetContainerItemLink(bag,slot)
-				local itemCount = GetContainerItemInfo(bag, slot)
-				if (itemLink == nil) then return end
-				if itemCount == nil then itemCount = 1 end
-
-
-				local itemName, _, itemRarity, _, _, _, _, _, _, _ = GetItemInfo(itemLink)
-				local itemID = GetContainerItemID(bag, slot)
-				local settings = get("util.automagic.SavedMailButtons")
-				local buttonName = button:GetText()
-				if settings and settings[buttonName] then
-					for i, data in pairs (settings[buttonName]) do
-						if data[2] == itemID and not lib.isSoulbound(bag, slot) then
-							if (get("util.automagic.chatspam")) then
-								aucPrint("AutoMagic has loaded", itemName, "from custom button.")
+		for slot=1,C_Container.GetContainerNumSlots(bag) do
+			if (C_Container.GetContainerItemLink(bag,slot)) then
+				local itemLink = C_Container.GetContainerItemLink(bag,slot)
+				local iteminfo = C_Container.GetContainerItemInfo(bag, slot)
+				if iteminfo then
+					local itemCount = iteminfo.stackCount
+					if (itemLink == nil) then return end
+					if itemCount == nil then itemCount = 1 end
+	
+	
+					local itemName, _, itemRarity, _, _, _, _, _, _, _ = GetItemInfo(itemLink)
+					local itemID = GetContainerItemID(bag, slot)
+					local settings = get("util.automagic.SavedMailButtons")
+					local buttonName = button:GetText()
+					if settings and settings[buttonName] then
+						for i, data in pairs (settings[buttonName]) do
+							if data[2] == itemID and not lib.isSoulbound(bag, slot) then
+								if (get("util.automagic.chatspam")) then
+									aucPrint("AutoMagic has loaded", itemName, "from custom button.")
+								end
+								UseContainerItem(bag, slot)
 							end
-							UseContainerItem(bag, slot)
 						end
 					end
 				end
@@ -661,15 +669,16 @@ end
 function lib.scanBags(actionFunction)
 	MailFrameTab_OnClick(nil, 2)
 	for bag=0,4 do
-		for slot=1,GetContainerNumSlots(bag) do
-			if (GetContainerItemLink(bag,slot)) then
-				local itemLink, itemCount = GetContainerItemLink(bag,slot)
+		for slot=1,C_Container.GetContainerNumSlots(bag) do
+			local iteminfo = C_Container.GetContainerItemInfo(bag, slot)
+			if iteminfo then
+				local itemLink = iteminfo.hyperlink
+				local itemCount = iteminfo.stackCount
 				if (itemLink == nil) then return end
-				if itemCount == nil then _, itemCount = GetContainerItemInfo(bag, slot) end
 				if itemCount == nil then itemCount = 1 end
 				local linkType, itemID, _, _, _, _ = decode(itemLink)
 				if linkType == "item" then
-					local itemName = GetItemInfo(itemLink)
+					local itemName = C_Item.GetItemInfo(itemLink)
 					actionFunction(bag, slot, itemLink, itemID, itemCount, itemName)
 				end
 			end

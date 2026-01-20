@@ -64,7 +64,7 @@ function lib.ASCConfirmContinue()
 		-- Hack: pickup and drop an item
 		local key, itemdata = next(lib.vendorlist)
 		if itemdata then
-			PickupContainerItem(itemdata[4], itemdata[5])
+			C_Container.PickupContainerItem(itemdata[4], itemdata[5])
 			ClearCursor()
 		end
 	end

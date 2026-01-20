@@ -212,7 +212,7 @@ local function HookClickBag(hookParams, returnValue, self, button, ignoreShift)
 		if AuctionFrame and AuctionFrameBrowse and AuctionFrameBrowse:IsVisible() then
 			local bag = self:GetParent():GetID()
 			local slot = self:GetID()
-			local link = GetContainerItemLink(bag, slot)
+			local link = C_Container.GetContainerItemLink(bag, slot)
 			if link then
 				local itemName
 				if link:match("item:%d") then

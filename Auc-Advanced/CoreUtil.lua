@@ -383,13 +383,13 @@ function lib.AddTab(tabButton, tabFrame)
 	end
 
 	-- Configure the frame.
-	tabFrame:SetParent(AuctionFrame);
-	tabFrame:SetPoint("TOPLEFT", "AuctionFrame", "TOPLEFT", 0, 0);
+	tabFrame:SetParent(_G["AuctionFrame"]);
+	tabFrame:SetPoint("TOPLEFT", _G["AuctionFrame"], "TOPLEFT", 0, 0);
 	private.relevelFrame(tabFrame);
 
 	-- Configure the tab button.
 	_G["AuctionFrameTab"..tabIndex] = tabButton;
-	tabButton:SetParent(AuctionFrame);
+	tabButton:SetParent(_G["AuctionFrame"]);
 	tabButton:SetPoint("TOPLEFT", _G["AuctionFrameTab"..(tabIndex - 1)]:GetName(), "TOPRIGHT", -8, 0);
 	tabButton:SetID(tabIndex);
 	tabButton:Show();

@@ -250,7 +250,7 @@ function private.LoadScanData()
 		if get("core.scan.disable_scandatawarning") then
 			aucPrint("|cffff7f3f"..text.."|r")
 		else
-			message(text)
+			AucAdvanced.Print(text)
 		end
 		-- cleanup
 		private.loadingScanData = nil
@@ -413,11 +413,11 @@ end
 function lib.StartScan(name, minUseLevel, maxUseLevel, isUsable, qualityIndex, GetAll, exactMatch, filterData, options) -- ### Legion : revised, check
 	if AuctionFrame and AuctionFrame:IsVisible() then
 		if private.isPaused then
-			message("Scanning is currently paused")
+			AucAdvanced.Print("Scanning is currently paused")
 			return
 		end
 		if private.isScanning then
-			message("Scan is currently in progress")
+			AucAdvanced.Print("Scan is currently in progress")
 			return
 		end
 		local CanQuery, CanQueryAll = CanSendAuctionQuery()
@@ -433,7 +433,7 @@ function lib.StartScan(name, minUseLevel, maxUseLevel, isUsable, qualityIndex, G
 						text = text.." You must wait "..minleft..":"..secleft.." until you can scan again."
 					end
 				end
-				message(text)
+				AucAdvanced.Print(text)
 				return
 			end
 
@@ -474,7 +474,7 @@ function lib.StartScan(name, minUseLevel, maxUseLevel, isUsable, qualityIndex, G
 		if not private.curQuery then
 			-- private.curQuery will have been set if QueryAuctionItems succeeded
 			-- this should never fail? we checked CanSendAuctionQuery() earlier
-			message("Scan failed: unable to send query")
+			AucAdvanced.Print("Scan failed: unable to send query")
 			if private.isGetAll then
 				lib.ProgressBars("GetAllProgressBar", nil, false)
 				BrowseSearchButton:Show()
@@ -492,7 +492,7 @@ function lib.StartScan(name, minUseLevel, maxUseLevel, isUsable, qualityIndex, G
 		--Show the progress indicator
 		private.UpdateScanProgress(true, nil, nil, nil, nil, nil, private.curQuery)
 	else
-		message("Steady on; You'll need to talk to the auctioneer first!")
+		AucAdvanced.Print("Steady on; You'll need to talk to the auctioneer first!")
 	end
 end
 
@@ -2547,7 +2547,7 @@ function private.StopStorePage(silent)
 	end
 	private.breakStorePage = nil
 	if isGetAll and not silent then
-		_G.message("Warning: GetAll scan is incomplete because it was interrupted")
+		AucAdvanced.Print("Warning: GetAll scan is incomplete because it was interrupted")
 	end
 end
 
@@ -2926,7 +2926,13 @@ function PostAuction(minBid, buyoutPrice, runTime, stackSize, numStacks, ...)
 			end
 		end
 	end
-	return private.Hook.PostAuction(minBid, buyoutPrice, runTime, stackSize, numStacks, ...)
+	-- TBC Anniversary prepatch: PostAuction() requires an extra trailing boolean despite incorrect Usage() text
+	local extra1 = ...
+	if extra1 == nil then
+		return private.Hook.PostAuction(minBid, buyoutPrice, runTime, stackSize, numStacks, true)
+	else
+		return private.Hook.PostAuction(minBid, buyoutPrice, runTime, stackSize, numStacks, true, ...)
+	end
 end
 
 function ProcessInbox(index)
@@ -3168,7 +3174,7 @@ function private.OnUpdate(me, dur)
 				-- Neither CanSendAuctionQuery nor AUCTION_ITEM_LIST_UPDATE have occurred and we have waited a long time
 				timeoutSentQuery = 0
 				private.ResetAll()
-				message("Auctioneer: Scan failed, Server is not responding")
+				AucAdvanced.Print("Auctioneer: Scan failed, Server is not responding")
 			else
 				timeoutSentQuery = timeoutSentQuery + dur
 			end

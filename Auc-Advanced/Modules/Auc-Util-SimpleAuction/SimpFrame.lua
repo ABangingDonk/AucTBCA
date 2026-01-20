@@ -667,7 +667,7 @@ function private.IconClicked()
 	local objType, _, itemLink = GetCursorInfo()
 	local size
 	if CursorHasItem() and frame.CursorItemBag and frame.CursorItemSlot then
-		_, size = GetContainerItemInfo(frame.CursorItemBag, frame.CursorItemSlot)
+		_, size = C_Container.GetContainerItemInfo(frame.CursorItemBag, frame.CursorItemSlot)
 	end
 	frame.CursorItemBag = nil
 	frame.CursorItemSlot = nil
@@ -728,7 +728,7 @@ function private.LoadItemLink(itemLink, size)
 		frame.name:SetTextColor(r, g, b)
 	else
 		frame.icon.itemLink = nil
-		frame.icon:SetNormalTexture(nil)
+		frame.icon:ClearNormalTexture()
 		frame.icon.count:SetText("")
 		frame.name:SetText("Drop item onto slot")
 		frame.create:Disable()
@@ -1175,8 +1175,8 @@ function private.CreateFrames()
 		if not (frame:IsVisible() and get("util.simpleauc.clickhook")) then return end
 		local bag = self:GetParent():GetID()
 		local slot = self:GetID()
-		local link = GetContainerItemLink(bag, slot)
-		local _, size = GetContainerItemInfo(bag, slot)
+		local link = C_Container.GetContainerItemLink(bag, slot)
+		local _, size = C_Container.GetContainerItemInfo(bag, slot)
 		if link then
 			if (button == "LeftButton") and (IsAltKeyDown()) then
 				private.LoadItemLink(link, size)
@@ -1334,7 +1334,7 @@ function private.CreateFrames()
 
 	frame.scanbutton = CreateFrame("Button", "AucAdvScanButton", AuctionFrameBrowse, "UIPanelButtonTemplate")
 	frame.scanbutton:SetText("Scan")
-	frame.scanbutton:SetParent(AuctionFrameBrowse)
+	frame.scanbutton:SetParent(_G["AuctionFrameBrowse"])
 	frame.scanbutton:SetPoint("LEFT", "AuctionFrameMoneyFrame", "RIGHT", 5,0)
 	frame.scanbutton:SetScript("OnClick", function()
 		if not AucIsScanning() then

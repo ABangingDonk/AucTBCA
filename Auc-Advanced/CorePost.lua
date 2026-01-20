@@ -577,8 +577,7 @@ function lib.IsAuctionable(bag, slot)
 		return false, "Token"
 	end
 
-	local _,_,_,_,_,lootable = GetContainerItemInfo(bag, slot)
-	if lootable then
+	if itemInfo.hasLoot then
 		return false, "Lootable"
 	end
 
@@ -802,14 +801,17 @@ do
 		-- count items in bags (only for locked sigs)
 		local sigcounts = {}
 		for bag = 0, NUM_BAG_FRAMES do
-			for slot = 1, GetContainerNumSlots(bag) do
-				local link = GetContainerItemLink(bag, slot)
+			for slot = 1, C_Container.GetContainerNumSlots(bag) do
+				local link = C_Container.GetContainerItemLink(bag, slot)
 				if link then
 					local sig = GetSigFromLink(link)
 					if lockedsigs[sig] then
-						local _, count = GetContainerItemInfo(bag, slot)
-						if not count or count < 1 then count = 1 end
-						sigcounts[sig] = (sigcounts[sig] or 0) + count
+						local iteminfo = C_Container.GetContainerItemInfo(bag, slot)
+						if iteminfo then
+							local count = iteminfo.stackCount
+							if not count or count < 1 then count = 1 end
+							sigcounts[sig] = (sigcounts[sig] or 0) + count
+						end
 					end
 				end
 			end
@@ -855,7 +857,7 @@ function private.HandlePostingError1(request, reason, special)
 	if private.IsReportableError(special) then
 		geterrorhandler()("Auctioneer CorePost Error: "..msg)
 	else
-		message(msg)
+		AucAdvanced.Print(msg)
 	end
 end
 
@@ -925,10 +927,12 @@ function private.SelectStack(request)
 	--]]
 
 	for bag = 0, NUM_BAG_FRAMES do
-		for slot = 1, GetContainerNumSlots(bag) do
-			local link = GetContainerItemLink(bag, slot)
+		for slot = 1, C_Container.GetContainerNumSlots(bag) do
+			local link = C_Container.GetContainerItemLink(bag, slot)
 			if link and GetSigFromLink(link) == sig and lib.IsAuctionable(bag, slot) then
-				local _, thiscount, locked = GetContainerItemInfo(bag,slot)
+				local iteminfo = C_Container.GetContainerItemInfo(bag,slot)
+				local thiscount = iteminfo.stackCount
+				local locked = iteminfo.isLocked
 				if locked then
 					return -- return immediately if we find a locked stack
 				elseif not foundStop then
@@ -998,8 +1002,8 @@ function private.LoadAuctionSlot(request)
 		return nil, nil, 1 -- wait & watch for bag changes
 	end
 
-	local link = GetContainerItemLink(bag, slot)
-	local itemID = GetContainerItemID(bag, slot)
+	local link = C_Container.GetContainerItemLink(bag, slot)
+	local itemID = C_Container.GetContainerItemID(bag, slot)
 	if not (link and itemID) then
 		private.QueueRemove()
 		return nil, "NotFound", nil
@@ -1022,7 +1026,7 @@ function private.LoadAuctionSlot(request)
 		return nil, "UnknownItem", nil
 	end
 
-	PickupContainerItem(bag, slot)
+	C_Container.PickupContainerItem(bag, slot)
 	if not CursorHasItem() then
 		-- failed to pick up from bags, probably due to some unfinished operation; wait for another cycle
 		return nil, nil, 1 -- wait & watch for bag changes

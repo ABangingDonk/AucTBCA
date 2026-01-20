@@ -122,10 +122,10 @@ lib.RETFUNCTION = function(x) return x end
 -- Check TOC version meets minimum requirements
 local _,build,_,tocVersion = GetBuildInfo()
 if tocVersion >= API_CHANGED then
-	message(API_CHANGED_MESSAGE)
+	AucAdvanced.Print(API_CHANGED_MESSAGE)
 	lib.ABORTLOAD = "Incorrect WoW client version"
 elseif tocVersion < MINIMUM_TOC or (MINIMUM_BUILD and tonumber(build) < MINIMUM_BUILD) then
-	message("Auctioneer requires Classic game client version "..MINIMUM_CLIENT.." or higher.")
+	AucAdvanced.Print("Auctioneer requires Classic game client version "..MINIMUM_CLIENT.." or higher.")
 	lib.ABORTLOAD = "Incorrect WoW client version"
 end
 if tocVersion <= CLASSIC_MAX then

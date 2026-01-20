@@ -88,7 +88,7 @@ function private.CreateFrames()
 							local itemInfo = C_Container.GetContainerItemInfo(bag,slot)
 							local texture   = itemInfo.iconFileID
 							local itemCount = itemInfo.stackCount
-							local locked    = itemInfo.isLOcked
+							local locked    = itemInfo.isLocked
 							if not itemCount or itemCount < 0 then itemCount = 1 end
 							local found = false
 							for i = 1, #ItemList do
@@ -551,7 +551,7 @@ function private.CreateFrames()
 	function frame.SetPriceColor(link, count, requiredBid, buyoutPrice, rDef, gDef, bDef)
 		if get('util.appraiser.color') and AucAdvanced.Modules.Util.PriceLevel then
 			if type(link) == "number" then
-				local _, l = GetItemInfo(link)
+				local _, l = C_Item.GetItemInfo(link)
 				link = l
 			end
 			if not link then return end

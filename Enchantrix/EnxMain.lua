@@ -107,7 +107,7 @@ function addonLoaded(hookArgs, event, addOnName)
 	hooksecurefunc(C_Container, "UseContainerItem", useContainerItemHook)
 	hooksecurefunc("PickupInventoryItem", pickupInventoryItemHook)
 	hooksecurefunc("SpellTargetItem", spellTargetItemHook)
-	hooksecurefunc("UseItemByName", useItemByNameHook);			-- added in 2.0, used by macro /use
+	hooksecurefunc(C_Item, "UseItemByName", useItemByNameHook);			-- added in 2.0, used by macro /use
 
 	-- events that we need to catch
 	Stubby.RegisterEventHook("UNIT_SPELLCAST_SUCCEEDED", "Enchantrix", onEvent)
@@ -283,7 +283,7 @@ function useContainerItemHook(bag, slot)
 	if ((UnitCastingInfo and not UnitCastingInfo("player")) or (CastingInfo and not CastingInfo())) then
 		if bag and slot then
 			--Enchantrix.Util.DebugPrint("Spellcast", ENX_INFO, "item targetted by bag", "info:", GetContainerItemLink(bag, slot))
-			DisenchantEvent.spellTarget = GetContainerItemLink(bag, slot)
+			DisenchantEvent.spellTarget = C_Container.GetContainerItemLink(bag, slot)
 			DisenchantEvent.targetted = GetTime()
 		end
 	end

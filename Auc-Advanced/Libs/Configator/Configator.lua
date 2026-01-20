@@ -457,10 +457,10 @@ if not lib.help then
 	end
 
 	local PanelScroller = LibStub:GetLibrary("PanelScroller")
-	lib.help.scroll = PanelScroller:Create(lib.CreateAnonName(), lib.help)
+	lib.help.scroll = PanelScroller:Create(lib.CreateAnonName(nil), lib.help)
 	lib.help.scroll:SetPoint("TOPLEFT", lib.help, "TOPLEFT", 10,-25)
 	lib.help.scroll:SetPoint("BOTTOMRIGHT", lib.help, "BOTTOMRIGHT", -25,5)
-	lib.help.scroll:SetScrollChild(lib.help.content)
+	lib.help.scroll:SetScrollChild(_G[lib.help.content:GetName()])
 	lib.help.scroll:SetScrollBarVisible("HORIZONTAL", "NO")
 end
 

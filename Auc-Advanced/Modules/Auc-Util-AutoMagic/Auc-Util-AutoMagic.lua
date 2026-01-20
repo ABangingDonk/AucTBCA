@@ -436,24 +436,27 @@ function lib.populateDataSheet()
 
 	for k, v in pairs(bagcontents) do bagcontents[k] = nil; end  --Reset table to ensure fresh data.
 	for bag=0,4 do
-		for slot=1,GetContainerNumSlots(bag) do
-			if (GetContainerItemLink(bag,slot)) then
-				local itemLink = GetContainerItemLink(bag,slot)
+		for slot=1,C_Container.GetContainerNumSlots(bag) do
+			if (C_Container.GetContainerItemLink(bag,slot)) then
+				local itemLink = C_Container.GetContainerItemLink(bag,slot)
 				if (itemLink == nil) then return end
 				local linkType, itemID, _, _, _, _ = decode(itemLink)
 				if linkType == "item" then
 					local btmRule = "~"
 					if BtmScan then
-						local _,itemCount = GetContainerItemInfo(bag,slot)
-						local reason, bids
-						local id, suffix, enchant, seed = BtmScan.BreakLink(itemLink)
-						local sig = ("%d:%d:%d"):format(id, suffix, enchant)
-						local bidlist = BtmScan.Settings.GetSetting("bid.list")
-
-						if (bidlist) then
-							bids = bidlist[sig..":"..seed.."x"..itemCount]
-							if(bids and bids[1]) then
-								btmRule = bids[1]
+						local iteminfo = C_Container.GetContainerItemInfo(bag,slot)
+						if iteminfo then
+							local itemCount = iteminfo.stackCount
+							local reason, bids
+							local id, suffix, enchant, seed = BtmScan.BreakLink(itemLink)
+							local sig = ("%d:%d:%d"):format(id, suffix, enchant)
+							local bidlist = BtmScan.Settings.GetSetting("bid.list")
+	
+							if (bidlist) then
+								bids = bidlist[sig..":"..seed.."x"..itemCount]
+								if(bids and bids[1]) then
+									btmRule = bids[1]
+								end
 							end
 						end
 					end

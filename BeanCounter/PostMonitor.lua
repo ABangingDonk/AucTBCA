@@ -65,15 +65,19 @@ function private.prePostAuctionHook(_, _, minBid, buyoutPrice, runTime, count, s
 		--Look in the bags find the locked item so we can get the itemlink, we also check if this is a multipost can this stack cover it
 		local itemLink, selectedStackCount
 		for bagID = 0, 4 do
-			local bagSlots = GetContainerNumSlots(bagID)
+			local bagSlots = C_Container.GetContainerNumSlots(bagID)
 			for  slot = 1, bagSlots do
-				local  _, selectedStack, locked, _, _ = GetContainerItemInfo(bagID, slot)
-				if locked then
-					local link = GetContainerItemLink(bagID, slot)
-					if link and strfind(link, name, 1, true) then
-						itemLink = link
-						selectedStackCount = selectedStack or 0
-						break
+				local iteminfo = C_Container.GetContainerItemInfo(bagID, slot)
+				if iteminfo then
+					local selectedStack = iteminfo.stackCount
+					local locked = iteminfo.isLocked
+					if locked then
+						local link = C_Container.GetContainerItemLink(bagID, slot)
+						if link and strfind(link, name, 1, true) then
+							itemLink = link
+							selectedStackCount = selectedStack or 0
+							break
+						end
 					end
 				end
 			end
